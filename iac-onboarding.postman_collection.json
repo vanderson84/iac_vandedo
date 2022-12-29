@@ -1,0 +1,599 @@
+{
+	"info": {
+		"_postman_id": "24cfd97b-3ddd-450b-a9ca-db4caf2b8629",
+		"name": "iac-onboarding",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1370952"
+	},
+	"item": [
+		{
+			"name": "scm token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9004/v1/api/code/{{scmProvider}}/token?tenant={{tenantID}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9004",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"{{scmProvider}}",
+						"token"
+					],
+					"query": [
+						{
+							"key": "tenant",
+							"value": "{{tenantID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "git healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9021/metrics/healthcheck",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"metrics",
+						"healthcheck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover repo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"pm.environment.set(\"eventID\", responseData.eventID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orgId\": \"\",\n    \"source\": \"{{scmProvider}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/repos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discovered repos",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/repos?pageNumber=1&pageSize=100&source={{scmProvider}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"repos"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "100"
+						},
+						{
+							"key": "source",
+							"value": "{{scmProvider}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "onboard all hcl",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"pm.environment.set(\"eventID\", responseData.eventID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"envId\": \"{{envID}}\",\n    \"terrascan\": true,\n    \"terraformVersion\": 0.12,\n    \"language\": \"hcl\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/onboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"onboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "onboard two-teir aws",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"pm.environment.set(\"eventID\", responseData.eventID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"envId\": \"{{envID}}\",\n    \"terrascan\": true,\n    \"terraformVersion\": 0.12,\n    \"url\": [\"https://github.com/parmaratwork/aged-bird.git\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/onboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"onboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "onboard simple aws",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"pm.environment.set(\"eventID\", responseData.eventID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"envId\": \"{{envID}}\",\n    \"terrascan\": true,\n    \"terraformVersion\": 0.12,\n    \"url\": [\"https://github.com/parmaratwork/cold-pine.git\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/onboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"onboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "onboard all hcl",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"pm.environment.set(\"eventID\", responseData.eventID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"envId\": \"{{envID}}\",\n    \"terrascan\": true,\n    \"terraformVersion\": 0.12,\n    \"language\": \"hcl\",\n    \"config\": {\n        \"batchSize\": 100,\n        \"batchInterval\": 0\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9021/v1/api/code/onboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"code",
+						"onboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "global resources",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Tenant-Id",
+						"value": "{{tenantID}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:9008/v2/api/resources/global/resources",
+					"host": [
+						"localhost"
+					],
+					"port": "9008",
+					"path": [
+						"v2",
+						"api",
+						"resources",
+						"global",
+						"resources"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "single global resource",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Tenant-Id",
+						"value": "a24cbc6c-c061-4d15-85c7-215f329634a3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:9008/v2/api/resources/global/resources?globalIacId={{globalIacID}}",
+					"host": [
+						"localhost"
+					],
+					"port": "9008",
+					"path": [
+						"v2",
+						"api",
+						"resources",
+						"global",
+						"resources"
+					],
+					"query": [
+						{
+							"key": "globalIacId",
+							"value": "{{globalIacID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "event",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9021/v1/api/event/{{eventID}}?status={{status}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"event",
+						"{{eventID}}"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "{{status}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "event summary",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9021/v1/api/event/{{eventID}}/summary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"event",
+						"{{eventID}}",
+						"summary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cancel event",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-siac-session",
+						"value": "091713f1-b392-4de5-a536-2a01271cb6d6",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-container-uuid",
+						"value": "{{tenantID}}",
+						"type": "text"
+					},
+					{
+						"key": "x-user-uuid",
+						"value": "{{user}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9021/v1/api/event/{{eventID}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9021",
+					"path": [
+						"v1",
+						"api",
+						"event",
+						"{{eventID}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
