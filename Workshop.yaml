@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Template CloudFormation com vulnerabilidades para demonstração"
+
+Resources:
+  VulnerableEC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      KeyName: "my-key" # ⚠️ Falha: Nome de chave pode estar exposto publicamente.
+      ImageId: "ami-12345678" # ⚠️ Falha: ID de AMI não especifica uma imagem segura.
+      SecurityGroupIds:
+        - !Ref OpenSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo "Senha: admin123" > /tmp/credentials.txt # ⚠️ Falha: Credenciais armazenadas no script de inicialização.
+
+  OpenSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Grupo de segurança com regras abertas"
+      SecurityGroupIngress:
+        - IpProtocol: "tcp"
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0" # ⚠️ Falha: SSH acessível a qualquer endereço IP.
+        - IpProtocol: "tcp"
+          FromPort: 80
+          ToPort: 80
+          CidrIp: "0.0.0.0/0" # ⚠️ Falha: Porta HTTP acessível a qualquer endereço IP.
+
+Outputs:
+  InstanceId:
+    Description: "ID da instância criada"
+    Value: !Ref VulnerableEC2Instance
